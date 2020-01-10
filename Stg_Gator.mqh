@@ -6,122 +6,123 @@
 
 /**
  * @file
- * Implements Gator strategy.
+ * Implements Gator strategy based on the Gator oscillator.
  */
 
 // Includes.
-#include "../../EA31337-classes/Indicators/Indi_Gator.mqh"
-#include "../../EA31337-classes/Strategy.mqh"
+#include <EA31337-classes/Indicators/Indi_Gator.mqh>
+#include <EA31337-classes/Strategy.mqh>
 
 // User input params.
-string __Gator_Parameters__ = "-- Settings for the Gator oscillator --";  // >>> GATOR <<<
-uint Gator_Active_Tf = 0;                    // Activate timeframes (1-255, e.g. M1=1,M5=2,M15=4,M30=8,H1=16,H2=32...)
-int Gator_Period_Jaw = 6;                    // Jaw Period
-int Gator_Period_Teeth = 10;                 // Teeth Period
-int Gator_Period_Lips = 8;                   // Lips Period
-int Gator_Shift_Jaw = 5;                     // Jaw Shift
-int Gator_Shift_Teeth = 7;                   // Teeth Shift
-int Gator_Shift_Lips = 5;                    // Lips Shift
-ENUM_MA_METHOD Gator_MA_Method = 2;          // MA Method
-ENUM_APPLIED_PRICE Gator_Applied_Price = 3;  // Applied Price
-int Gator_Shift = 2;                         // Shift
-ENUM_TRAIL_TYPE Gator_TrailingStopMethod = 22;                // Trail stop method
-ENUM_TRAIL_TYPE Gator_TrailingProfitMethod = 1;               // Trail profit method
-double Gator_SignalLevel = 0.00000000;                        // Signal level
-int Gator1_SignalMethod = 0;                                  // Signal method for M1 (0-
-int Gator5_SignalMethod = 0;                                  // Signal method for M5 (0-
-int Gator15_SignalMethod = 0;                                 // Signal method for M15 (0-
-int Gator30_SignalMethod = 0;                                 // Signal method for M30 (0-
-int Gator1_OpenCondition1 = 0;                                // Open condition 1 for M1 (0-1023)
-int Gator1_OpenCondition2 = 0;                                // Open condition 2 for M1 (0-)
-ENUM_MARKET_EVENT Gator1_CloseCondition = C_GATOR_BUY_SELL;   // Close condition // Close condition for M1
-int Gator5_OpenCondition1 = 0;                                // Open condition 1 for M5 (0-1023)
-int Gator5_OpenCondition2 = 0;                                // Open condition 2 for M5 (0-)
-ENUM_MARKET_EVENT Gator5_CloseCondition = C_GATOR_BUY_SELL;   // Close condition for M5
-int Gator15_OpenCondition1 = 0;                               // Open condition 1 for M15 (0-)
-int Gator15_OpenCondition2 = 0;                               // Open condition 2 for M15 (0-)
-ENUM_MARKET_EVENT Gator15_CloseCondition = C_GATOR_BUY_SELL;  // Close condition for M15
-int Gator30_OpenCondition1 = 0;                               // Open condition 1 for M30 (0-)
-int Gator30_OpenCondition2 = 0;                               // Open condition 2 for M30 (0-)
-ENUM_MARKET_EVENT Gator30_CloseCondition = C_GATOR_BUY_SELL;  // Close condition for M30
-double Gator1_MaxSpread = 6.0;                                // Max spread to trade for M1 (pips)
-double Gator5_MaxSpread = 7.0;                                // Max spread to trade for M5 (pips)
-double Gator15_MaxSpread = 8.0;                               // Max spread to trade for M15 (pips)
-double Gator30_MaxSpread = 10.0;                              // Max spread to trade for M30 (pips)
+INPUT string __Gator_Parameters__ = "-- Gator strategy params --";  // >>> GATOR <<<
+INPUT int Gator_Active_Tf = 0;             // Activate timeframes (1-255, e.g. M1=1,M5=2,M15=4,M30=8,H1=16,H2=32...)
+INPUT int Gator_Period_Jaw = 6;            // Jaw Period
+INPUT int Gator_Period_Teeth = 10;         // Teeth Period
+INPUT int Gator_Period_Lips = 8;           // Lips Period
+INPUT int Gator_Shift_Jaw = 5;             // Jaw Shift
+INPUT int Gator_Shift_Teeth = 7;           // Teeth Shift
+INPUT int Gator_Shift_Lips = 5;            // Lips Shift
+INPUT ENUM_MA_METHOD Gator_MA_Method = 2;  // MA Method
+INPUT ENUM_APPLIED_PRICE Gator_Applied_Price = 3;                  // Applied Price
+INPUT int Gator_Shift = 2;                                         // Shift
+INPUT ENUM_TRAIL_TYPE Gator_TrailingStopMethod = 22;               // Trail stop method
+INPUT ENUM_TRAIL_TYPE Gator_TrailingProfitMethod = 1;              // Trail profit method
+INPUT double Gator_SignalOpenLevel = 0.00000000;                   // Signal open level
+INPUT int Gator1_SignalBaseMethod = 0;                             // Signal base method (0-
+INPUT int Gator1_OpenCondition1 = 0;                               // Open condition 1 (0-1023)
+INPUT int Gator1_OpenCondition2 = 0;                               // Open condition 2 (0-)
+INPUT ENUM_MARKET_EVENT Gator1_CloseCondition = C_GATOR_BUY_SELL;  // Close condition // Close condition for M1
+INPUT double Gator_MaxSpread = 6.0;                                // Max spread to trade (pips)
+
+// Struct to define strategy parameters to override.
+struct Stg_Gator_Params : Stg_Params {
+  unsigned int Gator_Period;
+  ENUM_APPLIED_PRICE Gator_Applied_Price;
+  int Gator_Shift;
+  ENUM_TRAIL_TYPE Gator_TrailingStopMethod;
+  ENUM_TRAIL_TYPE Gator_TrailingProfitMethod;
+  double Gator_SignalOpenLevel;
+  long Gator_SignalBaseMethod;
+  long Gator_SignalOpenMethod1;
+  long Gator_SignalOpenMethod2;
+  double Gator_SignalCloseLevel;
+  ENUM_MARKET_EVENT Gator_SignalCloseMethod1;
+  ENUM_MARKET_EVENT Gator_SignalCloseMethod2;
+  double Gator_MaxSpread;
+
+  // Constructor: Set default param values.
+  Stg_Gator_Params()
+      : Gator_Period(::Gator_Period),
+        Gator_Applied_Price(::Gator_Applied_Price),
+        Gator_Shift(::Gator_Shift),
+        Gator_TrailingStopMethod(::Gator_TrailingStopMethod),
+        Gator_TrailingProfitMethod(::Gator_TrailingProfitMethod),
+        Gator_SignalOpenLevel(::Gator_SignalOpenLevel),
+        Gator_SignalBaseMethod(::Gator_SignalBaseMethod),
+        Gator_SignalOpenMethod1(::Gator_SignalOpenMethod1),
+        Gator_SignalOpenMethod2(::Gator_SignalOpenMethod2),
+        Gator_SignalCloseLevel(::Gator_SignalCloseLevel),
+        Gator_SignalCloseMethod1(::Gator_SignalCloseMethod1),
+        Gator_SignalCloseMethod2(::Gator_SignalCloseMethod2),
+        Gator_MaxSpread(::Gator_MaxSpread) {}
+};
+
+// Loads pair specific param values.
+#include "sets/EURUSD_H1.h"
+#include "sets/EURUSD_H4.h"
+#include "sets/EURUSD_M1.h"
+#include "sets/EURUSD_M15.h"
+#include "sets/EURUSD_M30.h"
+#include "sets/EURUSD_M5.h"
 
 class Stg_Gator : public Strategy {
  public:
   Stg_Gator(StgParams &_params, string _name) : Strategy(_params, _name) {}
 
-  static Stg_Gator *Init_M1() {
-    ChartParams cparams1(PERIOD_M1);
-    IndicatorParams gator_iparams(10, INDI_GATOR);
-    Gator_Params gator1_iparams(Gator_Period_Jaw, Gator_Shift_Jaw, Gator_Period_Teeth, Gator_Shift_Teeth,
-                                Gator_Period_Lips, Gator_Shift_Lips, Gator_MA_Method, Gator_Applied_Price);
-    StgParams gator1_sparams(new Trade(PERIOD_M1, _Symbol), new Indi_Gator(gator1_iparams, gator_iparams, cparams1),
-                             NULL, NULL);
-    gator1_sparams.SetSignals(Gator1_SignalMethod, Gator1_OpenCondition1, Gator1_OpenCondition2, Gator1_CloseCondition,
-                              NULL, Gator_SignalLevel, NULL);
-    gator1_sparams.SetStops(Gator_TrailingProfitMethod, Gator_TrailingStopMethod);
-    gator1_sparams.SetMaxSpread(Gator1_MaxSpread);
-    gator1_sparams.SetId(GATOR1);
-    return (new Stg_Gator(gator1_sparams, "Gator1"));
-  }
-  static Stg_Gator *Init_M5() {
-    ChartParams cparams5(PERIOD_M5);
-    IndicatorParams gator_iparams(10, INDI_GATOR);
-    Gator_Params gator5_iparams(Gator_Period_Jaw, Gator_Shift_Jaw, Gator_Period_Teeth, Gator_Shift_Teeth,
-                                Gator_Period_Lips, Gator_Shift_Lips, Gator_MA_Method, Gator_Applied_Price);
-    StgParams gator5_sparams(new Trade(PERIOD_M5, _Symbol), new Indi_Gator(gator5_iparams, gator_iparams, cparams5),
-                             NULL, NULL);
-    gator5_sparams.SetSignals(Gator5_SignalMethod, Gator5_OpenCondition1, Gator5_OpenCondition2, Gator5_CloseCondition,
-                              NULL, Gator_SignalLevel, NULL);
-    gator5_sparams.SetStops(Gator_TrailingProfitMethod, Gator_TrailingStopMethod);
-    gator5_sparams.SetMaxSpread(Gator5_MaxSpread);
-    gator5_sparams.SetId(GATOR5);
-    return (new Stg_Gator(gator5_sparams, "Gator5"));
-  }
-  static Stg_Gator *Init_M15() {
-    ChartParams cparams15(PERIOD_M15);
-    IndicatorParams gator_iparams(10, INDI_GATOR);
-    Gator_Params gator15_iparams(Gator_Period_Jaw, Gator_Shift_Jaw, Gator_Period_Teeth, Gator_Shift_Teeth,
-                                 Gator_Period_Lips, Gator_Shift_Lips, Gator_MA_Method, Gator_Applied_Price);
-    StgParams gator15_sparams(new Trade(PERIOD_M15, _Symbol), new Indi_Gator(gator15_iparams, gator_iparams, cparams15),
-                              NULL, NULL);
-    gator15_sparams.SetSignals(Gator15_SignalMethod, Gator15_OpenCondition1, Gator15_OpenCondition2,
-                               Gator15_CloseCondition, NULL, Gator_SignalLevel, NULL);
-    gator15_sparams.SetStops(Gator_TrailingProfitMethod, Gator_TrailingStopMethod);
-    gator15_sparams.SetMaxSpread(Gator15_MaxSpread);
-    gator15_sparams.SetId(GATOR15);
-    return (new Stg_Gator(gator15_sparams, "Gator15"));
-  }
-  static Stg_Gator *Init_M30() {
-    ChartParams cparams30(PERIOD_M30);
-    IndicatorParams gator_iparams(10, INDI_GATOR);
-    Gator_Params gator30_iparams(Gator_Period_Jaw, Gator_Shift_Jaw, Gator_Period_Teeth, Gator_Shift_Teeth,
-                                 Gator_Period_Lips, Gator_Shift_Lips, Gator_MA_Method, Gator_Applied_Price);
-    StgParams gator30_sparams(new Trade(PERIOD_M30, _Symbol), new Indi_Gator(gator30_iparams, gator_iparams, cparams30),
-                              NULL, NULL);
-    gator30_sparams.SetSignals(Gator30_SignalMethod, Gator30_OpenCondition1, Gator30_OpenCondition2,
-                               Gator30_CloseCondition, NULL, Gator_SignalLevel, NULL);
-    gator30_sparams.SetStops(Gator_TrailingProfitMethod, Gator_TrailingStopMethod);
-    gator30_sparams.SetMaxSpread(Gator30_MaxSpread);
-    gator30_sparams.SetId(GATOR30);
-    return (new Stg_Gator(gator30_sparams, "Gator30"));
-  }
-  static Stg_Gator *Init(ENUM_TIMEFRAMES _tf) {
+  static Stg_Gator *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
+    // Initialize strategy initial values.
+    Stg_Gator_Params _params;
     switch (_tf) {
-      case PERIOD_M1:
-        return Init_M1();
-      case PERIOD_M5:
-        return Init_M5();
-      case PERIOD_M15:
-        return Init_M15();
-      case PERIOD_M30:
-        return Init_M30();
-      default:
-        return NULL;
+      case PERIOD_M1: {
+        Stg_Gator_EURUSD_M1_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_M5: {
+        Stg_Gator_EURUSD_M5_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_M15: {
+        Stg_Gator_EURUSD_M15_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_M30: {
+        Stg_Gator_EURUSD_M30_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_H1: {
+        Stg_Gator_EURUSD_H1_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_H4: {
+        Stg_Gator_EURUSD_H4_Params _new_params;
+        _params = _new_params;
+      }
     }
+    // Initialize strategy parameters.
+    ChartParams cparams(_tf);
+    Gator_Params adx_params(_params.Gator_Period, _params.Gator_Applied_Price);
+    IndicatorParams adx_iparams(10, INDI_Gator);
+    StgParams sparams(new Trade(_tf, _Symbol), new Indi_Gator(adx_params, adx_iparams, cparams), NULL, NULL);
+    sparams.logger.SetLevel(_log_level);
+    sparams.SetMagicNo(_magic_no);
+    sparams.SetSignals(_params.Gator_SignalBaseMethod, _params.Gator_SignalOpenMethod1, _params.Gator_SignalOpenMethod2,
+                       _params.Gator_SignalCloseMethod1, _params.Gator_SignalCloseMethod2,
+                       _params.Gator_SignalOpenLevel, _params.Gator_SignalCloseLevel);
+    sparams.SetStops(_params.Gator_TrailingProfitMethod, _params.Gator_TrailingStopMethod);
+    sparams.SetMaxSpread(_params.Gator_MaxSpread);
+    // Initialize strategy instance.
+    Strategy *_strat = new Stg_Gator(sparams, "Gator");
+    return _strat;
   }
 
   /**
@@ -169,5 +170,13 @@ class Stg_Gator : public Strategy {
         break;
     }
     return _result;
+  }
+
+  /**
+   * Check strategy's closing signal.
+   */
+  bool SignalClose(ENUM_ORDER_TYPE _cmd, long _signal_method = EMPTY, double _signal_level = EMPTY) {
+    if (_signal_level == EMPTY) _signal_level = GetSignalCloseLevel();
+    return SignalOpen(Order::NegateOrderType(_cmd), _signal_method, _signal_level);
   }
 };
