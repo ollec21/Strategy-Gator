@@ -12,15 +12,12 @@ struct Stg_Gator_EURUSD_M15_Params : Stg_Gator_Params {
     Gator_Period = 2;
     Gator_Applied_Price = 3;
     Gator_Shift = 0;
-    Gator_TrailingStopMethod = 6;
-    Gator_TrailingProfitMethod = 11;
+    Gator_SignalOpenMethod = -63;
     Gator_SignalOpenLevel = 36;
-    Gator_SignalBaseMethod = -63;
-    Gator_SignalOpenMethod1 = 389;
-    Gator_SignalOpenMethod2 = 0;
+    Gator_SignalCloseMethod = 1;
     Gator_SignalCloseLevel = 36;
-    Gator_SignalCloseMethod1 = 1;
-    Gator_SignalCloseMethod2 = 0;
+    Gator_PriceLimitMethod = 0;
+    Gator_PriceLimitLevel = 0;
     Gator_MaxSpread = 4;
   }
 };
