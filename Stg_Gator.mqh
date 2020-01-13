@@ -34,7 +34,13 @@ INPUT double Gator_MaxSpread = 6.0;                                 // Max sprea
 
 // Struct to define strategy parameters to override.
 struct Stg_Gator_Params : Stg_Params {
-  unsigned int Gator_Period;
+  int Gator_Period_Jaw;
+  int Gator_Period_Teeth;
+  int Gator_Period_Lips;
+  int Gator_Shift_Jaw;
+  int Gator_Shift_Teeth;
+  int Gator_Shift_Lips;
+  ENUM_MA_METHOD Gator_MA_Method;
   ENUM_APPLIED_PRICE Gator_Applied_Price;
   int Gator_Shift;
   int Gator_SignalOpenMethod;
@@ -47,7 +53,13 @@ struct Stg_Gator_Params : Stg_Params {
 
   // Constructor: Set default param values.
   Stg_Gator_Params()
-      : Gator_Period(::Gator_Period),
+      : Gator_Period_Jaw(::Gator_Period_Jaw),
+        Gator_Period_Teeth(::Gator_Period_Teeth),
+        Gator_Period_Lips(::Gator_Period_Lips),
+        Gator_Shift_Jaw(::Gator_Shift_Jaw),
+        Gator_Shift_Teeth(::Gator_Shift_Teeth),
+        Gator_Shift_Lips(::Gator_Shift_Lips),
+        Gator_MA_Method(::Gator_MA_Method),
         Gator_Applied_Price(::Gator_Applied_Price),
         Gator_Shift(::Gator_Shift),
         Gator_SignalOpenMethod(::Gator_SignalOpenMethod),
@@ -102,9 +114,11 @@ class Stg_Gator : public Strategy {
     }
     // Initialize strategy parameters.
     ChartParams cparams(_tf);
-    Gator_Params adx_params(_params.Gator_Period, _params.Gator_Applied_Price);
-    IndicatorParams adx_iparams(10, INDI_Gator);
-    StgParams sparams(new Trade(_tf, _Symbol), new Indi_Gator(adx_params, adx_iparams, cparams), NULL, NULL);
+    Gator_Params gator_params(_params.Gator_Period_Jaw, _params.Gator_Period_Teeth, _params.Gator_Period_Lips,
+                              _params.Gator_Shift_Jaw, _params.Gator_Shift_Teeth, _params.Gator_Shift_Lips,
+                              _params.Gator_MA_Method, _params.Gator_Applied_Price);
+    IndicatorParams gator_iparams(10, INDI_GATOR);
+    StgParams sparams(new Trade(_tf, _Symbol), new Indi_Gator(gator_params, gator_iparams, cparams), NULL, NULL);
     sparams.logger.SetLevel(_log_level);
     sparams.SetMagicNo(_magic_no);
     sparams.SetSignals(_params.Gator_SignalOpenMethod, _params.Gator_SignalOpenLevel, _params.Gator_SignalCloseMethod,
@@ -125,7 +139,7 @@ class Stg_Gator : public Strategy {
    *   _cmd (int) - type of trade order command
    *   period (int) - period to check for
    *   _method (int) - signal method to use by using bitwise AND operation
-   *   _level1 (double) - signal level to consider the signal
+   *   _level (double) - signal level to consider the signal
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, double _level = 0.0) {
     bool _result = false;
@@ -138,9 +152,7 @@ class Stg_Gator : public Strategy {
     double gator_2_jaw = ((Indi_Gator *)this.Data()).GetValue(LINE_JAW, 2);
     double gator_2_teeth = ((Indi_Gator *)this.Data()).GetValue(LINE_TEETH, 2);
     double gator_2_lips = ((Indi_Gator *)this.Data()).GetValue(LINE_LIPS, 2);
-    if (_level1 == EMPTY) _level1 = GetSignalLevel1();
-    if (_level2 == EMPTY) _level2 = GetSignalLevel2();
-    double gap = _level1 * pip_size;
+    double gap = _level * Market().GetPipSize();
     switch (_cmd) {
       /*
         //4. Gator Oscillator

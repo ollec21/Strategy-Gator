@@ -9,7 +9,13 @@ struct Stg_Gator_EURUSD_H4_Params : Stg_Gator_Params {
   Stg_Gator_EURUSD_H4_Params() {
     symbol = "EURUSD";
     tf = PERIOD_H4;
-    Gator_Period = 2;
+    Gator_Period_Jaw = 6;
+    Gator_Period_Teeth = 10;
+    Gator_Period_Lips = 8;
+    Gator_Shift_Jaw = 5;
+    Gator_Shift_Teeth = 7;
+    Gator_Shift_Lips = 5;
+    Gator_MA_Method = 2;
     Gator_Applied_Price = 3;
     Gator_Shift = 0;
     Gator_SignalOpenMethod = 0;
