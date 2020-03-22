@@ -115,44 +115,45 @@ class Stg_Gator : public Strategy {
 
   /**
    * Check if Gator Oscillator is on buy or sell.
-   *
-   * Note: It doesn't give independent signals. Is used for Alligator correction.
-   * Principle: trend must be strengthened. Together with this Gator Oscillator goes up.
-   *
-   * @param
-   *   _cmd (int) - type of trade order command
-   *   period (int) - period to check for
-   *   _method (int) - signal method to use by using bitwise AND operation
-   *   _level (double) - signal level to consider the signal
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, double _level = 0.0) {
-    bool _result = false;
-    double gator_0_jaw = ((Indi_Gator *)this.Data()).GetValue(LINE_JAW, 0);
-    double gator_0_teeth = ((Indi_Gator *)this.Data()).GetValue(LINE_TEETH, 0);
-    double gator_0_lips = ((Indi_Gator *)this.Data()).GetValue(LINE_LIPS, 0);
-    double gator_1_jaw = ((Indi_Gator *)this.Data()).GetValue(LINE_JAW, 1);
-    double gator_1_teeth = ((Indi_Gator *)this.Data()).GetValue(LINE_TEETH, 1);
-    double gator_1_lips = ((Indi_Gator *)this.Data()).GetValue(LINE_LIPS, 1);
-    double gator_2_jaw = ((Indi_Gator *)this.Data()).GetValue(LINE_JAW, 2);
-    double gator_2_teeth = ((Indi_Gator *)this.Data()).GetValue(LINE_TEETH, 2);
-    double gator_2_lips = ((Indi_Gator *)this.Data()).GetValue(LINE_LIPS, 2);
-    double gap = _level * Market().GetPipSize();
-    switch (_cmd) {
-      /*
-        //4. Gator Oscillator
-        //Lower part of diagram is taken for calculations. Growth is checked on 4 periods.
-        //The flag is 1 of trend is strengthened, 0 - no strengthening, -1 - never.
-        //Uses part of Alligator's variables
-        if
-        (iGator(NULL,piga,jaw_tf,jaw_shift,teeth_tf,teeth_shift,lips_tf,lips_shift,MODE_SMMA,PRICE_MEDIAN,LOWER,3)>iGator(NULL,piga,jaw_tf,jaw_shift,teeth_tf,teeth_shift,lips_tf,lips_shift,MODE_SMMA,PRICE_MEDIAN,LOWER,2)
-        &&iGator(NULL,piga,jaw_tf,jaw_shift,teeth_tf,teeth_shift,lips_tf,lips_shift,MODE_SMMA,PRICE_MEDIAN,LOWER,2)>iGator(NULL,piga,jaw_tf,jaw_shift,teeth_tf,teeth_shift,lips_tf,lips_shift,MODE_SMMA,PRICE_MEDIAN,LOWER,1)
-        &&iGator(NULL,piga,jaw_tf,jaw_shift,teeth_tf,teeth_shift,lips_tf,lips_shift,MODE_SMMA,PRICE_MEDIAN,LOWER,1)>iGator(NULL,piga,jaw_tf,jaw_shift,teeth_tf,teeth_shift,lips_tf,lips_shift,MODE_SMMA,PRICE_MEDIAN,LOWER,0))
-        {f4=1;}
-      */
-      case ORDER_TYPE_BUY:
-        break;
-      case ORDER_TYPE_SELL:
-        break;
+    Indicator *_indi = Data();
+    bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
+    bool _result = _is_valid;
+    double _level_pips = _level * Chart().GetPipSize();
+    if (_is_valid) {
+      switch (_cmd) {
+        case ORDER_TYPE_BUY:
+          _result = _indi[CURR].value[LINE_LOWER_HISTOGRAM] < _indi[PREV].value[LINE_LOWER_HISTOGRAM];
+          if (METHOD(_method, 0)) _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] < _indi[PPREV].value[LINE_LOWER_HISTOGRAM]; // ... 2 consecutive columns are red.
+          if (METHOD(_method, 1)) _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] < _indi[3].value[LINE_LOWER_HISTOGRAM]; // ... 3 consecutive columns are red.
+          if (METHOD(_method, 2)) _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] < _indi[4].value[LINE_LOWER_HISTOGRAM]; // ... 4 consecutive columns are red.
+          if (METHOD(_method, 3)) _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] > _indi[PPREV].value[LINE_LOWER_HISTOGRAM]; // ... 2 consecutive columns are green.
+          if (METHOD(_method, 4)) _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] > _indi[3].value[LINE_LOWER_HISTOGRAM]; // ... 3 consecutive columns are green.
+          if (METHOD(_method, 5)) _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] < _indi[4].value[LINE_LOWER_HISTOGRAM]; // ... 4 consecutive columns are green.
+          if (METHOD(_method, 6)) _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] < _indi[PPREV].value[LINE_UPPER_HISTOGRAM]; // ... 2 consecutive columns are red.
+          if (METHOD(_method, 7)) _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] < _indi[3].value[LINE_UPPER_HISTOGRAM]; // ... 3 consecutive columns are red.
+          if (METHOD(_method, 8)) _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] < _indi[4].value[LINE_UPPER_HISTOGRAM]; // ... 4 consecutive columns are red.
+          if (METHOD(_method, 9)) _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] > _indi[PPREV].value[LINE_UPPER_HISTOGRAM]; // ... 2 consecutive columns are green.
+          if (METHOD(_method, 10)) _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] > _indi[3].value[LINE_UPPER_HISTOGRAM]; // ... 3 consecutive columns are green.
+          if (METHOD(_method, 11)) _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] < _indi[4].value[LINE_UPPER_HISTOGRAM]; // ... 4 consecutive columns are green.
+          break;
+        case ORDER_TYPE_SELL:
+          _result = _indi[CURR].value[LINE_UPPER_HISTOGRAM] > _indi[PREV].value[LINE_UPPER_HISTOGRAM];
+          if (METHOD(_method, 0)) _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] < _indi[PPREV].value[LINE_LOWER_HISTOGRAM]; // ... 2 consecutive columns are red.
+          if (METHOD(_method, 1)) _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] < _indi[3].value[LINE_LOWER_HISTOGRAM]; // ... 3 consecutive columns are red.
+          if (METHOD(_method, 2)) _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] < _indi[4].value[LINE_LOWER_HISTOGRAM]; // ... 4 consecutive columns are red.
+          if (METHOD(_method, 3)) _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] > _indi[PPREV].value[LINE_LOWER_HISTOGRAM]; // ... 2 consecutive columns are green.
+          if (METHOD(_method, 4)) _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] > _indi[3].value[LINE_LOWER_HISTOGRAM]; // ... 3 consecutive columns are green.
+          if (METHOD(_method, 5)) _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] < _indi[4].value[LINE_LOWER_HISTOGRAM]; // ... 4 consecutive columns are green.
+          if (METHOD(_method, 6)) _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] < _indi[PPREV].value[LINE_UPPER_HISTOGRAM]; // ... 2 consecutive columns are red.
+          if (METHOD(_method, 7)) _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] < _indi[3].value[LINE_UPPER_HISTOGRAM]; // ... 3 consecutive columns are red.
+          if (METHOD(_method, 8)) _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] < _indi[4].value[LINE_UPPER_HISTOGRAM]; // ... 4 consecutive columns are red.
+          if (METHOD(_method, 9)) _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] > _indi[PPREV].value[LINE_UPPER_HISTOGRAM]; // ... 2 consecutive columns are green.
+          if (METHOD(_method, 10)) _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] > _indi[3].value[LINE_UPPER_HISTOGRAM]; // ... 3 consecutive columns are green.
+          if (METHOD(_method, 11)) _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] < _indi[4].value[LINE_UPPER_HISTOGRAM]; // ... 4 consecutive columns are green.
+          break;
+      }
     }
     return _result;
   }
@@ -200,14 +201,16 @@ class Stg_Gator : public Strategy {
    * Gets price limit value for profit take or stop loss.
    */
   double PriceLimit(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, double _level = 0.0) {
+    Indicator *_indi = Data();
     double _trail = _level * Market().GetPipSize();
-    int _direction = Order::OrderDirection(_cmd) * (_mode == ORDER_TYPE_SL ? -1 : 1);
+    int _direction = Order::OrderDirection(_cmd, _mode);
     double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
     double _result = _default_value;
     switch (_method) {
-      case 0: {
-        // @todo
-      }
+      case 0:
+        // @todo: GH-160
+        //_indi.GetPeak()
+        break;
     }
     return _result;
   }
