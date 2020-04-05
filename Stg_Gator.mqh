@@ -107,6 +107,7 @@ class Stg_Gator : public Strategy {
     sparams.SetSignals(_params.Gator_SignalOpenMethod, _params.Gator_SignalOpenLevel, _params.Gator_SignalCloseMethod,
                        _params.Gator_SignalOpenFilterMethod, _params.Gator_SignalOpenBoostMethod,
                        _params.Gator_SignalCloseLevel);
+    sparams.SetPriceLimits(_params.Gator_PriceLimitMethod, _params.Gator_PriceLimitLevel);
     sparams.SetMaxSpread(_params.Gator_MaxSpread);
     // Initialize strategy instance.
     Strategy *_strat = new Stg_Gator(sparams, "Gator");
