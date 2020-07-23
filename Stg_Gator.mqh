@@ -102,7 +102,7 @@ class Stg_Gator : public Strategy {
                               _params.Gator_MA_Method, _params.Gator_Applied_Price);
     gator_params.SetTf(_tf);
     StgParams sparams(new Trade(_tf, _Symbol), new Indi_Gator(gator_params), NULL, NULL);
-    sparams.logger.SetLevel(_log_level);
+    sparams.logger.Ptr().SetLevel(_log_level);
     sparams.SetMagicNo(_magic_no);
     sparams.SetSignals(_params.Gator_SignalOpenMethod, _params.Gator_SignalOpenLevel, _params.Gator_SignalCloseMethod,
                        _params.Gator_SignalOpenFilterMethod, _params.Gator_SignalOpenBoostMethod,
