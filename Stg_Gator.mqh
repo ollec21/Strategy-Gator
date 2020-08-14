@@ -14,14 +14,14 @@ INPUT ENUM_MA_METHOD Gator_MA_Method = 2;             // MA Method
 INPUT ENUM_APPLIED_PRICE Gator_Applied_Price = 3;     // Applied Price
 INPUT int Gator_Shift = 2;                            // Shift
 INPUT int Gator_SignalOpenMethod = 0;                 // Signal open method (0-
-INPUT float Gator_SignalOpenLevel = 0.00000000;      // Signal open level
+INPUT float Gator_SignalOpenLevel = 0.00000000;       // Signal open level
 INPUT int Gator_SignalOpenFilterMethod = 0.00000000;  // Signal open filter method
 INPUT int Gator_SignalOpenBoostMethod = 0.00000000;   // Signal open boost method
 INPUT int Gator_SignalCloseMethod = 0;                // Signal close method (0-
-INPUT float Gator_SignalCloseLevel = 0.00000000;     // Signal close level
+INPUT float Gator_SignalCloseLevel = 0.00000000;      // Signal close level
 INPUT int Gator_PriceLimitMethod = 0;                 // Price limit method
-INPUT float Gator_PriceLimitLevel = 0;               // Price limit level
-INPUT float Gator_MaxSpread = 6.0;                   // Max spread to trade (pips)
+INPUT float Gator_PriceLimitLevel = 0;                // Price limit level
+INPUT float Gator_MaxSpread = 6.0;                    // Max spread to trade (pips)
 
 // Includes.
 #include <EA31337-classes/Indicators/Indi_Gator.mqh>
@@ -39,14 +39,14 @@ struct Stg_Gator_Params : StgParams {
   ENUM_APPLIED_PRICE Gator_Applied_Price;
   int Gator_Shift;
   int Gator_SignalOpenMethod;
-  double Gator_SignalOpenLevel;
+  float Gator_SignalOpenLevel;
   int Gator_SignalOpenFilterMethod;
   int Gator_SignalOpenBoostMethod;
   int Gator_SignalCloseMethod;
-  double Gator_SignalCloseLevel;
+  float Gator_SignalCloseLevel;
   int Gator_PriceLimitMethod;
-  double Gator_PriceLimitLevel;
-  double Gator_MaxSpread;
+  float Gator_PriceLimitLevel;
+  float Gator_MaxSpread;
 
   // Constructor: Set default param values.
   Stg_Gator_Params()
@@ -229,6 +229,6 @@ class Stg_Gator : public Strategy {
         break;
       }
     }
-    return _result;
+    return (float)_result;
   }
 };
