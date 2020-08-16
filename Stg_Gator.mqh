@@ -3,16 +3,12 @@
  * Implements Gator strategy based on the Gator oscillator.
  */
 
+// Includes.
+#include <EA31337-classes/Indicators/Indi_Gator.mqh>
+#include <EA31337-classes/Strategy.mqh>
+
 // User input params.
-INPUT int Gator_Period_Jaw = 6;                       // Jaw Period
-INPUT int Gator_Period_Teeth = 10;                    // Teeth Period
-INPUT int Gator_Period_Lips = 8;                      // Lips Period
-INPUT int Gator_Shift_Jaw = 5;                        // Jaw Shift
-INPUT int Gator_Shift_Teeth = 7;                      // Teeth Shift
-INPUT int Gator_Shift_Lips = 5;                       // Lips Shift
-INPUT ENUM_MA_METHOD Gator_MA_Method = 2;             // MA Method
-INPUT ENUM_APPLIED_PRICE Gator_Applied_Price = 3;     // Applied Price
-INPUT int Gator_Shift = 2;                            // Shift
+INPUT float Gator_LotSize = 0;                        // Lot size
 INPUT int Gator_SignalOpenMethod = 0;                 // Signal open method (0-
 INPUT float Gator_SignalOpenLevel = 0.00000000;       // Signal open level
 INPUT int Gator_SignalOpenFilterMethod = 0.00000000;  // Signal open filter method
@@ -21,58 +17,63 @@ INPUT int Gator_SignalCloseMethod = 0;                // Signal close method (0-
 INPUT float Gator_SignalCloseLevel = 0.00000000;      // Signal close level
 INPUT int Gator_PriceLimitMethod = 0;                 // Price limit method
 INPUT float Gator_PriceLimitLevel = 0;                // Price limit level
+INPUT int Gator_TickFilterMethod = 0;                 // Tick filter method
 INPUT float Gator_MaxSpread = 6.0;                    // Max spread to trade (pips)
+INPUT int Gator_Shift = 2;                            // Shift
+INPUT string __Gator_Indi_Gator_Parameters__ =
+    "-- Gator strategy: Gator indicator params --";     // >>> Gator strategy: Gator indicator <<<
+INPUT int Indi_Gator_Period_Jaw = 6;                    // Jaw Period
+INPUT int Indi_Gator_Period_Teeth = 10;                 // Teeth Period
+INPUT int Indi_Gator_Period_Lips = 8;                   // Lips Period
+INPUT int Indi_Gator_Shift_Jaw = 5;                     // Jaw Shift
+INPUT int Indi_Gator_Shift_Teeth = 7;                   // Teeth Shift
+INPUT int Indi_Gator_Shift_Lips = 5;                    // Lips Shift
+INPUT ENUM_MA_METHOD Indi_Gator_MA_Method = 2;          // MA Method
+INPUT ENUM_APPLIED_PRICE Indi_Gator_Applied_Price = 3;  // Applied Price
 
-// Includes.
-#include <EA31337-classes/Indicators/Indi_Gator.mqh>
-#include <EA31337-classes/Strategy.mqh>
+// Structs.
+
+// Defines struct with default user indicator values.
+struct Indi_Gator_Params_Defaults : GatorParams {
+  Indi_Gator_Params_Defaults()
+      : GatorParams(::Indi_Gator_Period_Jaw, ::Indi_Gator_Shift_Jaw, ::Indi_Gator_Period_Teeth,
+                    ::Indi_Gator_Shift_Teeth, ::Indi_Gator_Period_Lips, ::Indi_Gator_Shift_Lips, ::Indi_Gator_MA_Method,
+                    ::Indi_Gator_Applied_Price) {}
+
+} indi_gator_defaults;
+
+// Defines struct to store indicator parameter values.
+struct Indi_Gator_Params : public GatorParams {
+  // Struct constructors.
+  void Indi_Gator_Params(GatorParams &_params, ENUM_TIMEFRAMES _tf) : GatorParams(_params, _tf) {}
+};
+
+// Defines struct with default user strategy values.
+struct Stg_Gator_Params_Defaults : StgParams {
+  Stg_Gator_Params_Defaults()
+      : StgParams(::Gator_SignalOpenMethod, ::Gator_SignalOpenFilterMethod, ::Gator_SignalOpenLevel,
+                  ::Gator_SignalOpenBoostMethod, ::Gator_SignalCloseMethod, ::Gator_SignalCloseLevel,
+                  ::Gator_PriceLimitMethod, ::Gator_PriceLimitLevel, ::Gator_TickFilterMethod, ::Gator_MaxSpread,
+                  ::Gator_Shift) {}
+} stg_gator_defaults;
 
 // Struct to define strategy parameters to override.
 struct Stg_Gator_Params : StgParams {
-  int Gator_Period_Jaw;
-  int Gator_Period_Teeth;
-  int Gator_Period_Lips;
-  int Gator_Shift_Jaw;
-  int Gator_Shift_Teeth;
-  int Gator_Shift_Lips;
-  ENUM_MA_METHOD Gator_MA_Method;
-  ENUM_APPLIED_PRICE Gator_Applied_Price;
-  int Gator_Shift;
-  int Gator_SignalOpenMethod;
-  float Gator_SignalOpenLevel;
-  int Gator_SignalOpenFilterMethod;
-  int Gator_SignalOpenBoostMethod;
-  int Gator_SignalCloseMethod;
-  float Gator_SignalCloseLevel;
-  int Gator_PriceLimitMethod;
-  float Gator_PriceLimitLevel;
-  float Gator_MaxSpread;
+  Indi_Gator_Params iparams;
+  StgParams sparams;
 
-  // Constructor: Set default param values.
-  Stg_Gator_Params()
-      : Gator_Period_Jaw(::Gator_Period_Jaw),
-        Gator_Period_Teeth(::Gator_Period_Teeth),
-        Gator_Period_Lips(::Gator_Period_Lips),
-        Gator_Shift_Jaw(::Gator_Shift_Jaw),
-        Gator_Shift_Teeth(::Gator_Shift_Teeth),
-        Gator_Shift_Lips(::Gator_Shift_Lips),
-        Gator_MA_Method(::Gator_MA_Method),
-        Gator_Applied_Price(::Gator_Applied_Price),
-        Gator_Shift(::Gator_Shift),
-        Gator_SignalOpenMethod(::Gator_SignalOpenMethod),
-        Gator_SignalOpenLevel(::Gator_SignalOpenLevel),
-        Gator_SignalOpenFilterMethod(::Gator_SignalOpenFilterMethod),
-        Gator_SignalOpenBoostMethod(::Gator_SignalOpenBoostMethod),
-        Gator_SignalCloseMethod(::Gator_SignalCloseMethod),
-        Gator_SignalCloseLevel(::Gator_SignalCloseLevel),
-        Gator_PriceLimitMethod(::Gator_PriceLimitMethod),
-        Gator_PriceLimitLevel(::Gator_PriceLimitLevel),
-        Gator_MaxSpread(::Gator_MaxSpread) {}
+  // Struct constructors.
+  Stg_Gator_Params(Indi_Gator_Params &_iparams, StgParams &_sparams)
+      : iparams(indi_gator_defaults, _iparams.tf), sparams(stg_gator_defaults) {
+    iparams = _iparams;
+    sparams = _sparams;
+  }
 };
 
 // Loads pair specific param values.
 #include "sets/EURUSD_H1.h"
 #include "sets/EURUSD_H4.h"
+#include "sets/EURUSD_H8.h"
 #include "sets/EURUSD_M1.h"
 #include "sets/EURUSD_M15.h"
 #include "sets/EURUSD_M30.h"
@@ -84,26 +85,24 @@ class Stg_Gator : public Strategy {
 
   static Stg_Gator *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
-    Stg_Gator_Params _params;
+    Indi_Gator_Params _indi_params(indi_gator_defaults, _tf);
+    StgParams _stg_params(stg_gator_defaults);
     if (!Terminal::IsOptimization()) {
-      SetParamsByTf<Stg_Gator_Params>(_params, _tf, stg_gator_m1, stg_gator_m5, stg_gator_m15, stg_gator_m30,
-                                      stg_gator_h1, stg_gator_h4, stg_gator_h4);
+      SetParamsByTf<Indi_Gator_Params>(_indi_params, _tf, indi_gator_m1, indi_gator_m5, indi_gator_m15, indi_gator_m30,
+                                       indi_gator_h1, indi_gator_h4, indi_gator_h8);
+      SetParamsByTf<StgParams>(_stg_params, _tf, stg_gator_m1, stg_gator_m5, stg_gator_m15, stg_gator_m30, stg_gator_h1,
+                               stg_gator_h4, stg_gator_h8);
     }
+    // Initialize indicator.
+    GatorParams gator_params(_indi_params);
+    _stg_params.SetIndicator(new Indi_Gator(_indi_params));
     // Initialize strategy parameters.
-    GatorParams gator_params(_params.Gator_Period_Jaw, _params.Gator_Period_Teeth, _params.Gator_Period_Lips,
-                             _params.Gator_Shift_Jaw, _params.Gator_Shift_Teeth, _params.Gator_Shift_Lips,
-                             _params.Gator_MA_Method, _params.Gator_Applied_Price);
-    gator_params.SetTf(_tf);
-    StgParams sparams(new Trade(_tf, _Symbol), new Indi_Gator(gator_params), NULL, NULL);
-    sparams.logger.Ptr().SetLevel(_log_level);
-    sparams.SetMagicNo(_magic_no);
-    sparams.SetSignals(_params.Gator_SignalOpenMethod, _params.Gator_SignalOpenLevel, _params.Gator_SignalCloseMethod,
-                       _params.Gator_SignalOpenFilterMethod, _params.Gator_SignalOpenBoostMethod,
-                       _params.Gator_SignalCloseLevel);
-    sparams.SetPriceLimits(_params.Gator_PriceLimitMethod, _params.Gator_PriceLimitLevel);
-    sparams.SetMaxSpread(_params.Gator_MaxSpread);
+    _stg_params.GetLog().SetLevel(_log_level);
+    _stg_params.SetMagicNo(_magic_no);
+    _stg_params.SetTf(_tf, _Symbol);
     // Initialize strategy instance.
-    Strategy *_strat = new Stg_Gator(sparams, "Gator");
+    Strategy *_strat = new Stg_Gator(_stg_params, "Gator");
+    _stg_params.SetStops(_strat, _strat);
     return _strat;
   }
 
@@ -211,21 +210,21 @@ class Stg_Gator : public Strategy {
     double _result = _default_value;
     switch (_method) {
       case 0: {
-        int _bar_count = (int)_level * (int)_indi.GetLipsPeriod();
-        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count));
+        int _bar_count1 = (int)_level * (int)_indi.GetLipsPeriod();
+        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count1))
+                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count1));
         break;
       }
       case 1: {
-        int _bar_count = (int)_level * (int)_indi.GetTeethShift();
-        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count));
+        int _bar_count2 = (int)_level * (int)_indi.GetTeethShift();
+        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count2))
+                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count2));
         break;
       }
       case 2: {
-        int _bar_count = (int)_level * (int)_indi.GetJawPeriod();
-        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count));
+        int _bar_count3 = (int)_level * (int)_indi.GetJawPeriod();
+        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count3))
+                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count3));
         break;
       }
     }
