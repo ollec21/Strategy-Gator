@@ -15,8 +15,8 @@ INPUT int Gator_SignalOpenFilterMethod = 0.00000000;  // Signal open filter meth
 INPUT int Gator_SignalOpenBoostMethod = 0.00000000;   // Signal open boost method
 INPUT int Gator_SignalCloseMethod = 0;                // Signal close method (0-
 INPUT float Gator_SignalCloseLevel = 0.00000000;      // Signal close level
-INPUT int Gator_PriceLimitMethod = 0;                 // Price limit method
-INPUT float Gator_PriceLimitLevel = 0;                // Price limit level
+INPUT int Gator_PriceStopMethod = 0;                  // Price stop method
+INPUT float Gator_PriceStopLevel = 0;                 // Price stop level
 INPUT int Gator_TickFilterMethod = 0;                 // Tick filter method
 INPUT float Gator_MaxSpread = 6.0;                    // Max spread to trade (pips)
 INPUT int Gator_Shift = 2;                            // Shift
@@ -53,7 +53,7 @@ struct Stg_Gator_Params_Defaults : StgParams {
   Stg_Gator_Params_Defaults()
       : StgParams(::Gator_SignalOpenMethod, ::Gator_SignalOpenFilterMethod, ::Gator_SignalOpenLevel,
                   ::Gator_SignalOpenBoostMethod, ::Gator_SignalCloseMethod, ::Gator_SignalCloseLevel,
-                  ::Gator_PriceLimitMethod, ::Gator_PriceLimitLevel, ::Gator_TickFilterMethod, ::Gator_MaxSpread,
+                  ::Gator_PriceStopMethod, ::Gator_PriceStopLevel, ::Gator_TickFilterMethod, ::Gator_MaxSpread,
                   ::Gator_Shift) {}
 } stg_gator_defaults;
 
@@ -200,9 +200,9 @@ class Stg_Gator : public Strategy {
   }
 
   /**
-   * Gets price limit value for profit take or stop loss.
+   * Gets price stop value for profit take or stop loss.
    */
-  float PriceLimit(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
+  float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
     Indi_Gator *_indi = Data();
     double _trail = _level * Market().GetPipSize();
     int _direction = Order::OrderDirection(_cmd, _mode);
