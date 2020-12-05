@@ -117,82 +117,82 @@ class Stg_Gator : public Strategy {
     if (_is_valid) {
       switch (_cmd) {
         case ORDER_TYPE_BUY:
-          _result = _indi[CURR].value[LINE_LOWER_HISTOGRAM] < _indi[PREV].value[LINE_LOWER_HISTOGRAM];
+          _result = _indi[CURR][LINE_LOWER_HISTOGRAM] < _indi[PREV][LINE_LOWER_HISTOGRAM];
           if (METHOD(_method, 0))
-            _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[PPREV].value[LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
+            _result &= _indi[PREV][LINE_LOWER_HISTOGRAM] <
+                       _indi[PPREV][LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
           if (METHOD(_method, 1))
-            _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[3].value[LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
+            _result &= _indi[PPREV][LINE_LOWER_HISTOGRAM] <
+                       _indi[3][LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
           if (METHOD(_method, 2))
-            _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[4].value[LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
+            _result &=
+                _indi[3][LINE_LOWER_HISTOGRAM] < _indi[4][LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
           if (METHOD(_method, 3))
-            _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] >
-                       _indi[PPREV].value[LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
+            _result &= _indi[PREV][LINE_LOWER_HISTOGRAM] >
+                       _indi[PPREV][LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
           if (METHOD(_method, 4))
-            _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] >
-                       _indi[3].value[LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
+            _result &= _indi[PPREV][LINE_LOWER_HISTOGRAM] >
+                       _indi[3][LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
           if (METHOD(_method, 5))
-            _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[4].value[LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
+            _result &= _indi[3][LINE_LOWER_HISTOGRAM] <
+                       _indi[4][LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
           if (METHOD(_method, 6))
-            _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[PPREV].value[LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
+            _result &= _indi[PREV][LINE_UPPER_HISTOGRAM] <
+                       _indi[PPREV][LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
           if (METHOD(_method, 7))
-            _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[3].value[LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
+            _result &= _indi[PPREV][LINE_UPPER_HISTOGRAM] <
+                       _indi[3][LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
           if (METHOD(_method, 8))
-            _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[4].value[LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
+            _result &=
+                _indi[3][LINE_UPPER_HISTOGRAM] < _indi[4][LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
           if (METHOD(_method, 9))
-            _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] >
-                       _indi[PPREV].value[LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
+            _result &= _indi[PREV][LINE_UPPER_HISTOGRAM] >
+                       _indi[PPREV][LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
           if (METHOD(_method, 10))
-            _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] >
-                       _indi[3].value[LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
+            _result &= _indi[PPREV][LINE_UPPER_HISTOGRAM] >
+                       _indi[3][LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
           if (METHOD(_method, 11))
-            _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[4].value[LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
+            _result &= _indi[3][LINE_UPPER_HISTOGRAM] <
+                       _indi[4][LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
           break;
         case ORDER_TYPE_SELL:
-          _result = _indi[CURR].value[LINE_UPPER_HISTOGRAM] > _indi[PREV].value[LINE_UPPER_HISTOGRAM];
+          _result = _indi[CURR][LINE_UPPER_HISTOGRAM] > _indi[PREV][LINE_UPPER_HISTOGRAM];
           if (METHOD(_method, 0))
-            _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[PPREV].value[LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
+            _result &= _indi[PREV][LINE_LOWER_HISTOGRAM] <
+                       _indi[PPREV][LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
           if (METHOD(_method, 1))
-            _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[3].value[LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
+            _result &= _indi[PPREV][LINE_LOWER_HISTOGRAM] <
+                       _indi[3][LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
           if (METHOD(_method, 2))
-            _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[4].value[LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
+            _result &=
+                _indi[3][LINE_LOWER_HISTOGRAM] < _indi[4][LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
           if (METHOD(_method, 3))
-            _result &= _indi[PREV].value[LINE_LOWER_HISTOGRAM] >
-                       _indi[PPREV].value[LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
+            _result &= _indi[PREV][LINE_LOWER_HISTOGRAM] >
+                       _indi[PPREV][LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
           if (METHOD(_method, 4))
-            _result &= _indi[PPREV].value[LINE_LOWER_HISTOGRAM] >
-                       _indi[3].value[LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
+            _result &= _indi[PPREV][LINE_LOWER_HISTOGRAM] >
+                       _indi[3][LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
           if (METHOD(_method, 5))
-            _result &= _indi[3].value[LINE_LOWER_HISTOGRAM] <
-                       _indi[4].value[LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
+            _result &= _indi[3][LINE_LOWER_HISTOGRAM] <
+                       _indi[4][LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
           if (METHOD(_method, 6))
-            _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[PPREV].value[LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
+            _result &= _indi[PREV][LINE_UPPER_HISTOGRAM] <
+                       _indi[PPREV][LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
           if (METHOD(_method, 7))
-            _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[3].value[LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
+            _result &= _indi[PPREV][LINE_UPPER_HISTOGRAM] <
+                       _indi[3][LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
           if (METHOD(_method, 8))
-            _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[4].value[LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
+            _result &=
+                _indi[3][LINE_UPPER_HISTOGRAM] < _indi[4][LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
           if (METHOD(_method, 9))
-            _result &= _indi[PREV].value[LINE_UPPER_HISTOGRAM] >
-                       _indi[PPREV].value[LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
+            _result &= _indi[PREV][LINE_UPPER_HISTOGRAM] >
+                       _indi[PPREV][LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
           if (METHOD(_method, 10))
-            _result &= _indi[PPREV].value[LINE_UPPER_HISTOGRAM] >
-                       _indi[3].value[LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
+            _result &= _indi[PPREV][LINE_UPPER_HISTOGRAM] >
+                       _indi[3][LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
           if (METHOD(_method, 11))
-            _result &= _indi[3].value[LINE_UPPER_HISTOGRAM] <
-                       _indi[4].value[LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
+            _result &= _indi[3][LINE_UPPER_HISTOGRAM] <
+                       _indi[4][LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
           break;
       }
     }
