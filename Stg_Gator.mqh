@@ -16,6 +16,7 @@ INPUT float Gator_PriceStopLevel = 0;                 // Price stop level
 INPUT int Gator_TickFilterMethod = 0;                 // Tick filter method
 INPUT float Gator_MaxSpread = 6.0;                    // Max spread to trade (pips)
 INPUT int Gator_Shift = 2;                            // Shift
+INPUT int Gator_OrderCloseTime = -10;                 // Order close time in mins (>0) or bars (<0)
 INPUT string __Gator_Indi_Gator_Parameters__ =
     "-- Gator strategy: Gator indicator params --";     // >>> Gator strategy: Gator indicator <<<
 INPUT int Indi_Gator_Period_Jaw = 6;                    // Jaw Period
@@ -50,7 +51,7 @@ struct Stg_Gator_Params_Defaults : StgParams {
       : StgParams(::Gator_SignalOpenMethod, ::Gator_SignalOpenFilterMethod, ::Gator_SignalOpenLevel,
                   ::Gator_SignalOpenBoostMethod, ::Gator_SignalCloseMethod, ::Gator_SignalCloseLevel,
                   ::Gator_PriceStopMethod, ::Gator_PriceStopLevel, ::Gator_TickFilterMethod, ::Gator_MaxSpread,
-                  ::Gator_Shift) {}
+                  ::Gator_Shift, ::Gator_OrderCloseTime) {}
 } stg_gator_defaults;
 
 // Struct to define strategy parameters to override.
