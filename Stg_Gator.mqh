@@ -18,24 +18,24 @@ INPUT float Gator_MaxSpread = 4.0;                   // Max spread to trade (pip
 INPUT int Gator_Shift = 2;                           // Shift
 INPUT int Gator_OrderCloseTime = -20;                // Order close time in mins (>0) or bars (<0)
 INPUT string __Gator_Indi_Gator_Parameters__ =
-    "-- Gator strategy: Gator indicator params --";     // >>> Gator strategy: Gator indicator <<<
-INPUT int Indi_Gator_Period_Jaw = 6;                    // Jaw Period
-INPUT int Indi_Gator_Period_Teeth = 10;                 // Teeth Period
-INPUT int Indi_Gator_Period_Lips = 8;                   // Lips Period
-INPUT int Indi_Gator_Shift_Jaw = 5;                     // Jaw Shift
-INPUT int Indi_Gator_Shift_Teeth = 7;                   // Teeth Shift
-INPUT int Indi_Gator_Shift_Lips = 5;                    // Lips Shift
-INPUT ENUM_MA_METHOD Indi_Gator_MA_Method = 2;          // MA Method
-INPUT ENUM_APPLIED_PRICE Indi_Gator_Applied_Price = 3;  // Applied Price
+    "-- Gator strategy: Gator indicator params --";           // >>> Gator strategy: Gator indicator <<<
+INPUT int Gator_Indi_Gator_Period_Jaw = 6;                    // Jaw Period
+INPUT int Gator_Indi_Gator_Period_Teeth = 10;                 // Teeth Period
+INPUT int Gator_Indi_Gator_Period_Lips = 8;                   // Lips Period
+INPUT int Gator_Indi_Gator_Shift_Jaw = 5;                     // Jaw Shift
+INPUT int Gator_Indi_Gator_Shift_Teeth = 7;                   // Teeth Shift
+INPUT int Gator_Indi_Gator_Shift_Lips = 5;                    // Lips Shift
+INPUT ENUM_MA_METHOD Gator_Indi_Gator_MA_Method = 2;          // MA Method
+INPUT ENUM_APPLIED_PRICE Gator_Indi_Gator_Applied_Price = 3;  // Applied Price
 
 // Structs.
 
 // Defines struct with default user indicator values.
 struct Indi_Gator_Params_Defaults : GatorParams {
   Indi_Gator_Params_Defaults()
-      : GatorParams(::Indi_Gator_Period_Jaw, ::Indi_Gator_Shift_Jaw, ::Indi_Gator_Period_Teeth,
-                    ::Indi_Gator_Shift_Teeth, ::Indi_Gator_Period_Lips, ::Indi_Gator_Shift_Lips, ::Indi_Gator_MA_Method,
-                    ::Indi_Gator_Applied_Price) {}
+      : GatorParams(::Gator_Indi_Gator_Period_Jaw, ::Gator_Indi_Gator_Shift_Jaw, ::Gator_Indi_Gator_Period_Teeth,
+                    ::Gator_Indi_Gator_Shift_Teeth, ::Gator_Indi_Gator_Period_Lips, ::Gator_Indi_Gator_Shift_Lips,
+                    ::Gator_Indi_Gator_MA_Method, ::Gator_Indi_Gator_Applied_Price) {}
 
 } indi_gator_defaults;
 
