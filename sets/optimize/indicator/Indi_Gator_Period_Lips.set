@@ -1,7 +1,7 @@
-; Optimize strategy indicator's Gator params.
-Gator_Indi_Gator_Period_Lips,1=2
-Gator_Indi_Gator_Period_Lips,2=2
-Gator_Indi_Gator_Period_Lips,3=10
+; Optimize strategy indicator's Gator period param.
+Gator_Indi_Gator_Period_Lips,1=4
+Gator_Indi_Gator_Period_Lips,2=4
+Gator_Indi_Gator_Period_Lips,3=24
 Gator_Indi_Gator_Period_Lips,F=1
 Gator_SignalOpenFilterMethod=1
 Gator_TickFilterMethod=1
