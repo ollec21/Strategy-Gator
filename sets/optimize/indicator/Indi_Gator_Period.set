@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Gator period param.
+Gator_Indi_Gator_Period,1=4
+Gator_Indi_Gator_Period,2=4
+Gator_Indi_Gator_Period,3=24
+Gator_Indi_Gator_Period,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1
