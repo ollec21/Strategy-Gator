@@ -25,7 +25,7 @@ struct Stg_Gator_Params_{{ Timeframe }} : StgParams {
     signal_close_method = {{ Gator_SignalCloseMethod | default(0) }};
     signal_close_level = (float){{ Gator_SignalCloseLevel | default(0) }};
     price_stop_method = {{ Gator_PriceStopMethod | default(0) }};
-    price_stop_level = {{ Gator_SignalCloseLevel | default(1) }};
+    price_stop_level = (float){{ Gator_SignalCloseLevel | default(1) }};
     tick_filter_method = {{ Gator_TickFilterMethod  | default(1) }};
     max_spread = {{ Gator_MaxSpread | default(0) }};
   }
