@@ -7,7 +7,7 @@
 struct Indi_Gator_Params_{{ Timeframe }} : GatorParams {
   Indi_Gator_Params_{{ Timeframe }}() : GatorParams(indi_gator_defaults, PERIOD_{{ Timeframe }}) {
     applied_price = (ENUM_APPLIED_PRICE){{ Gator_Indi_Gator_Applied_Price | default(0) }};
-    ma_method = {{ Gator_Indi_Gator_MA_Method | default(0) }};
+    ma_method = (ENUM_MA_METHOD){{ Gator_Indi_Gator_MA_Method | default(0) }};
     period = {{ Gator_Indi_Gator_Period | default(0) }};
     shift = {{ Gator_Shift | default(0) }};
   }
