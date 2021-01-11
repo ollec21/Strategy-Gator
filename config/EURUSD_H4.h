@@ -4,8 +4,8 @@
  */
 
 // Defines indicator's parameter values for the given pair symbol and timeframe.
-struct Indi_Gator_Params_H4 : Indi_Gator_Params {
-  Indi_Gator_Params_H4() : Indi_Gator_Params(indi_gator_defaults, PERIOD_H4) { shift = 0; }
+struct Indi_Gator_Params_H4 : GatorParams {
+  Indi_Gator_Params_H4() : GatorParams(indi_gator_defaults, PERIOD_H4) { shift = 0; }
 } indi_gator_h4;
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.

@@ -27,6 +27,7 @@ INPUT int Gator_Indi_Gator_Shift_Teeth = 7;                   // Teeth Shift
 INPUT int Gator_Indi_Gator_Shift_Lips = 5;                    // Lips Shift
 INPUT ENUM_MA_METHOD Gator_Indi_Gator_MA_Method = 2;          // MA Method
 INPUT ENUM_APPLIED_PRICE Gator_Indi_Gator_Applied_Price = 3;  // Applied Price
+INPUT int Gator_Indi_Gator_Shift = 0;                         // Shift
 
 // Structs.
 
@@ -35,15 +36,9 @@ struct Indi_Gator_Params_Defaults : GatorParams {
   Indi_Gator_Params_Defaults()
       : GatorParams(::Gator_Indi_Gator_Period_Jaw, ::Gator_Indi_Gator_Shift_Jaw, ::Gator_Indi_Gator_Period_Teeth,
                     ::Gator_Indi_Gator_Shift_Teeth, ::Gator_Indi_Gator_Period_Lips, ::Gator_Indi_Gator_Shift_Lips,
-                    ::Gator_Indi_Gator_MA_Method, ::Gator_Indi_Gator_Applied_Price) {}
+                    ::Gator_Indi_Gator_MA_Method, ::Gator_Indi_Gator_Applied_Price, ::Gator_Indi_Gator_Shift) {}
 
 } indi_gator_defaults;
-
-// Defines struct to store indicator parameter values.
-struct Indi_Gator_Params : public GatorParams {
-  // Struct constructors.
-  void Indi_Gator_Params(GatorParams &_params, ENUM_TIMEFRAMES _tf) : GatorParams(_params, _tf) {}
-};
 
 // Defines struct with default user strategy values.
 struct Stg_Gator_Params_Defaults : StgParams {
@@ -56,11 +51,11 @@ struct Stg_Gator_Params_Defaults : StgParams {
 
 // Struct to define strategy parameters to override.
 struct Stg_Gator_Params : StgParams {
-  Indi_Gator_Params iparams;
+  GatorParams iparams;
   StgParams sparams;
 
   // Struct constructors.
-  Stg_Gator_Params(Indi_Gator_Params &_iparams, StgParams &_sparams)
+  Stg_Gator_Params(GatorParams &_iparams, StgParams &_sparams)
       : iparams(indi_gator_defaults, _iparams.tf), sparams(stg_gator_defaults) {
     iparams = _iparams;
     sparams = _sparams;
@@ -82,11 +77,11 @@ class Stg_Gator : public Strategy {
 
   static Stg_Gator *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
-    Indi_Gator_Params _indi_params(indi_gator_defaults, _tf);
+    GatorParams _indi_params(indi_gator_defaults, _tf);
     StgParams _stg_params(stg_gator_defaults);
     if (!Terminal::IsOptimization()) {
-      SetParamsByTf<Indi_Gator_Params>(_indi_params, _tf, indi_gator_m1, indi_gator_m5, indi_gator_m15, indi_gator_m30,
-                                       indi_gator_h1, indi_gator_h4, indi_gator_h8);
+      SetParamsByTf<GatorParams>(_indi_params, _tf, indi_gator_m1, indi_gator_m5, indi_gator_m15, indi_gator_m30,
+                                 indi_gator_h1, indi_gator_h4, indi_gator_h8);
       SetParamsByTf<StgParams>(_stg_params, _tf, stg_gator_m1, stg_gator_m5, stg_gator_m15, stg_gator_m30, stg_gator_h1,
                                stg_gator_h4, stg_gator_h8);
     }

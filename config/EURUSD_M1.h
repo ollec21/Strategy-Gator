@@ -4,8 +4,8 @@
  */
 
 // Defines indicator's parameter values for the given pair symbol and timeframe.
-struct Indi_Gator_Params_M1 : Indi_Gator_Params {
-  Indi_Gator_Params_M1() : Indi_Gator_Params(indi_gator_defaults, PERIOD_M1) { shift = 0; }
+struct Indi_Gator_Params_M1 : GatorParams {
+  Indi_Gator_Params_M1() : GatorParams(indi_gator_defaults, PERIOD_M1) { shift = 0; }
 } indi_gator_m1;
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.
