@@ -13,5 +13,5 @@ Gator_Indi_Gator_Shift_Teeth={{ shift_teeth | default(0) }}
 Gator_LotSize={{ lot_size | default(0) }}
 Gator_PriceStopMethod=0
 Gator_SignalOpenFilterMethod=1
-Gator_SignalOpenLevel={{ signal_open_level | replace("(float)", "") | float | default(0) }}
+Gator_SignalOpenLevel={{ (signal_open_level | default(0) | replace("(float)", "") | float) }}
 Gator_TickFilterMethod=1
