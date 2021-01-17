@@ -8,8 +8,13 @@ struct Indi_Gator_Params_{{ Timeframe }} : GatorParams {
   Indi_Gator_Params_{{ Timeframe }}() : GatorParams(indi_gator_defaults, PERIOD_{{ Timeframe }}) {
     applied_price = (ENUM_APPLIED_PRICE){{ Gator_Indi_Gator_Applied_Price | default(0) }};
     ma_method = (ENUM_MA_METHOD){{ Gator_Indi_Gator_MA_Method | default(0) }};
-    period = {{ Gator_Indi_Gator_Period | default(0) }};
-    shift = {{ Gator_Shift | default(0) }};
+    period_jaw = {{ Gator_Indi_Gator_Period_Jaw | default(0) }};
+    period_lips = {{ Gator_Indi_Gator_Period_Lips | default(0) }};
+    period_teeth = {{ Gator_Indi_Gator_Period_Teeth | default(0) }};
+    shift = {{ Gator_Indi_Gator_Shift | default(0) }};
+    shift_jaw = {{ Gator_Indi_Gator_Shift_Jaw | default(0) }};
+    shift_lips = {{ Gator_Indi_Gator_Shift_Lips | default(0) }};
+    shift_teeth = {{ Gator_Indi_Gator_Shift_Teeth | default(0) }};
   }
 } indi_gator_{{ Timeframe | lower }};
 
