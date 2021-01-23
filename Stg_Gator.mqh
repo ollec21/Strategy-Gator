@@ -4,19 +4,20 @@
  */
 
 // User input params.
-INPUT float Gator_LotSize = 0;                       // Lot size
-INPUT int Gator_SignalOpenMethod = 0;                // Signal open method (0-
-INPUT float Gator_SignalOpenLevel = 0.0f;            // Signal open level
-INPUT int Gator_SignalOpenFilterMethod = 1;          // Signal open filter method
-INPUT int Gator_SignalOpenBoostMethod = 0.00000000;  // Signal open boost method
-INPUT int Gator_SignalCloseMethod = 0;               // Signal close method (0-
-INPUT float Gator_SignalCloseLevel = 0.0f;           // Signal close level
-INPUT int Gator_PriceStopMethod = 0;                 // Price stop method
-INPUT float Gator_PriceStopLevel = 0;                // Price stop level
-INPUT int Gator_TickFilterMethod = 1;                // Tick filter method
-INPUT float Gator_MaxSpread = 4.0;                   // Max spread to trade (pips)
-INPUT int Gator_Shift = 2;                           // Shift
-INPUT int Gator_OrderCloseTime = -20;                // Order close time in mins (>0) or bars (<0)
+INPUT string __Gator_Parameters__ = "-- Gator strategy params --";  // >>> GATOR <<<
+INPUT float Gator_LotSize = 0;                                      // Lot size
+INPUT int Gator_SignalOpenMethod = 0;                               // Signal open method (0-
+INPUT float Gator_SignalOpenLevel = 0.0f;                           // Signal open level
+INPUT int Gator_SignalOpenFilterMethod = 1;                         // Signal open filter method
+INPUT int Gator_SignalOpenBoostMethod = 0;                          // Signal open boost method
+INPUT int Gator_SignalCloseMethod = 0;                              // Signal close method (0-
+INPUT float Gator_SignalCloseLevel = 0.0f;                          // Signal close level
+INPUT int Gator_PriceStopMethod = 0;                                // Price stop method
+INPUT float Gator_PriceStopLevel = 0;                               // Price stop level
+INPUT int Gator_TickFilterMethod = 1;                               // Tick filter method
+INPUT float Gator_MaxSpread = 4.0;                                  // Max spread to trade (pips)
+INPUT int Gator_Shift = 2;                                          // Shift
+INPUT int Gator_OrderCloseTime = -20;                               // Order close time in mins (>0) or bars (<0)
 INPUT string __Gator_Indi_Gator_Parameters__ =
     "-- Gator strategy: Gator indicator params --";                   // >>> Gator strategy: Gator indicator <<<
 INPUT int Gator_Indi_Gator_Period_Jaw = 6;                            // Jaw Period
