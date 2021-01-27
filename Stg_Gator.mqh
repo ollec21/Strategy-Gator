@@ -110,82 +110,26 @@ class Stg_Gator : public Strategy {
     if (_is_valid) {
       switch (_cmd) {
         case ORDER_TYPE_BUY:
-          _result = _indi[CURR][(int)LINE_LOWER_HISTOGRAM] < _indi[PREV][(int)LINE_LOWER_HISTOGRAM];
-          if (METHOD(_method, 0))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 1))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 2))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 3))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 4))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 5))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
-          if (METHOD(_method, 6))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 7))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 8))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 9))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 10))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 11))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
+          // Buy: if the indicator is increasing and above zero.
+          _result &= _indi[CURR][0] < 0 && _indi.IsIncreasing(3);
+          _result &= _indi.IsIncByPct(_level, 0, 0, 2);
+          if (_result && _method != 0) {
+            if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, 0, 3);
+            if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, 0, 5);
+            // Signal: Changing from negative values to positive.
+            if (METHOD(_method, 2)) _result &= _indi[PPREV][0] > 0;
+          }
           break;
         case ORDER_TYPE_SELL:
-          _result = _indi[CURR][(int)LINE_UPPER_HISTOGRAM] > _indi[PREV][(int)LINE_UPPER_HISTOGRAM];
-          if (METHOD(_method, 0))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 1))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 2))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 3))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 4))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 5))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
-          if (METHOD(_method, 6))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 7))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 8))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 9))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 10))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 11))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
+          // Sell: if the indicator is decreasing and below zero and a column is red.
+          _result &= _indi[CURR][0] > 0 && _indi.IsDecreasing(3);
+          _result &= _indi.IsDecByPct(-_level, 0, 0, 2);
+          if (_result && _method != 0) {
+            if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, 0, 3);
+            if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, 0, 5);
+            // Signal: Changing from positive values to negative.
+            if (METHOD(_method, 2)) _result &= _indi[PPREV][0] < 0;
+          }
           break;
       }
     }
