@@ -10,7 +10,7 @@ struct Indi_Gator_Params_M1 : GatorParams {
     jaw_period = 13;
     jaw_shift = 8;
     teeth_period = 8;
-    teeth_shift = 5;
+    teeth_shift = 7;
     lips_period = 5;
     lips_shift = 3;
     ma_method = (ENUM_MA_METHOD)2;
