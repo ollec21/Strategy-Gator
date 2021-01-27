@@ -6,11 +6,11 @@
 // User input params.
 INPUT string __Gator_Parameters__ = "-- Gator strategy params --";  // >>> GATOR <<<
 INPUT float Gator_LotSize = 0;                                      // Lot size
-INPUT int Gator_SignalOpenMethod = 0;                               // Signal open method (0-
+INPUT int Gator_SignalOpenMethod = 0;                               // Signal open method (-4-4)
 INPUT float Gator_SignalOpenLevel = 0.0f;                           // Signal open level
 INPUT int Gator_SignalOpenFilterMethod = 1;                         // Signal open filter method
 INPUT int Gator_SignalOpenBoostMethod = 0;                          // Signal open boost method
-INPUT int Gator_SignalCloseMethod = 0;                              // Signal close method (0-
+INPUT int Gator_SignalCloseMethod = 0;                              // Signal close method (-4-4)
 INPUT float Gator_SignalCloseLevel = 0.0f;                          // Signal close level
 INPUT int Gator_PriceStopMethod = 0;                                // Price stop method
 INPUT float Gator_PriceStopLevel = 0;                               // Price stop level
@@ -104,31 +104,30 @@ class Stg_Gator : public Strategy {
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, float _level = 0.0f, int _shift = 0) {
     Indi_Gator *_indi = Data();
-    bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
+    bool _is_valid = _indi[_shift].IsValid() && _indi[_shift + 1].IsValid() && _indi[_shift + 2].IsValid();
     bool _result = _is_valid;
-    double _level_pips = _level * Chart().GetPipSize();
     if (_is_valid) {
       switch (_cmd) {
         case ORDER_TYPE_BUY:
-          // Buy: if the indicator is increasing and above zero.
-          _result &= _indi[CURR][0] < 0 && _indi.IsIncreasing(3);
-          _result &= _indi.IsIncByPct(_level, 0, 0, 2);
+          // Buy: if the indicator is increasing.
+          _result &= _indi.IsIncreasing(2, LINE_UPPER_HISTOGRAM, _shift);
+          _result &= _indi.IsDecreasing(2, LINE_LOWER_HISTOGRAM, _shift);
+          _result &= _indi.IsIncByPct(_level, LINE_UPPER_HISTOGRAM, _shift, 2);
+          _result &= _indi.IsDecByPct(-_level, LINE_LOWER_HISTOGRAM, _shift, 2);
           if (_result && _method != 0) {
-            if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, 0, 3);
-            if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, 0, 5);
-            // Signal: Changing from negative values to positive.
-            if (METHOD(_method, 2)) _result &= _indi[PPREV][0] > 0;
+            if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, LINE_LOWER_HISTOGRAM, _shift + 3);
+            if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, LINE_LOWER_HISTOGRAM, _shift + 5);
           }
           break;
         case ORDER_TYPE_SELL:
-          // Sell: if the indicator is decreasing and below zero and a column is red.
-          _result &= _indi[CURR][0] > 0 && _indi.IsDecreasing(3);
-          _result &= _indi.IsDecByPct(-_level, 0, 0, 2);
+          // Sell: if the indicator is decreasing.
+          _result &= _indi.IsDecreasing(2, LINE_UPPER_HISTOGRAM, _shift);
+          _result &= _indi.IsIncreasing(2, LINE_LOWER_HISTOGRAM, _shift);
+          _result &= _indi.IsDecByPct(-_level, LINE_UPPER_HISTOGRAM, _shift, 2);
+          _result &= _indi.IsIncByPct(_level, LINE_LOWER_HISTOGRAM, _shift, 2);
           if (_result && _method != 0) {
-            if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, 0, 3);
-            if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, 0, 5);
-            // Signal: Changing from positive values to negative.
-            if (METHOD(_method, 2)) _result &= _indi[PPREV][0] < 0;
+            if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, LINE_UPPER_HISTOGRAM, _shift + 3);
+            if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, LINE_UPPER_HISTOGRAM, _shift + 5);
           }
           break;
       }
