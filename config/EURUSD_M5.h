@@ -7,12 +7,12 @@
 struct Indi_Gator_Params_M5 : GatorParams {
   Indi_Gator_Params_M5() : GatorParams(indi_gator_defaults, PERIOD_M5) {
     applied_price = (ENUM_APPLIED_PRICE)0;
-    jaw_period = 13;
-    jaw_shift = 10;
-    teeth_period = 6;
-    teeth_shift = 3;
-    lips_period = 5;
-    lips_shift = 1;
+    jaw_period = 9;
+    jaw_shift = 8;
+    teeth_period = 4;
+    teeth_shift = 5;
+    lips_period = 3;
+    lips_shift = 0;
     ma_method = (ENUM_MA_METHOD)2;
     shift = 0;
   }
