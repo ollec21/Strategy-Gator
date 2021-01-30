@@ -9,7 +9,7 @@ struct Indi_Gator_Params_M30 : GatorParams {
     applied_price = (ENUM_APPLIED_PRICE)3;
     jaw_period = 17;
     jaw_shift = 10;
-    teeth_period = 10;
+    teeth_period = 8;
     teeth_shift = 7;
     lips_period = 7;
     lips_shift = 3;
