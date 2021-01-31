@@ -9,12 +9,12 @@ struct Indi_Gator_Params_M15 : GatorParams {
     applied_price = (ENUM_APPLIED_PRICE)3;
     jaw_period = 17;
     jaw_shift = 6;
-    teeth_period = 10;
-    teeth_shift = 2;
     lips_period = 7;
     lips_shift = 5;
-    ma_method = (ENUM_MA_METHOD)2;
+    ma_method = (ENUM_MA_METHOD)1;
     shift = 0;
+    teeth_period = 10;
+    teeth_shift = 2;
   }
 } indi_gator_m15;
 

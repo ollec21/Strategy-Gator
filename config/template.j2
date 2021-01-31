@@ -10,11 +10,11 @@ struct Indi_Gator_Params_{{ Timeframe }} : GatorParams {
     jaw_period = {{ Gator_Indi_Gator_Period_Jaw | default(0) }};
     jaw_shift = {{ Gator_Indi_Gator_Shift_Jaw | default(0) }};
     lips_period = {{ Gator_Indi_Gator_Period_Lips | default(0) }};
-    lips_shift = {{ Gator_Indi_Gator_Shift_Teeth | default(0) }};
+    lips_shift = {{ Gator_Indi_Gator_Shift_Lips | default(0) }};
     ma_method = (ENUM_MA_METHOD){{ Gator_Indi_Gator_MA_Method | default(0) }};
     shift = {{ Gator_Indi_Gator_Shift | default(0) }};
     teeth_period = {{ Gator_Indi_Gator_Period_Teeth | default(0) }};
-    teeth_shift = {{ Gator_Indi_Gator_Shift_Lips | default(0) }};
+    teeth_shift = {{ Gator_Indi_Gator_Shift_Teeth | default(0) }};
   }
 } indi_gator_{{ Timeframe | lower }};
 
