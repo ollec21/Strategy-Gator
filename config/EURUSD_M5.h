@@ -1,4 +1,4 @@
-/*
+/**
  * @file
  * Defines default strategy parameter values for the given timeframe.
  */
@@ -6,9 +6,15 @@
 // Defines indicator's parameter values for the given pair symbol and timeframe.
 struct Indi_Gator_Params_M5 : GatorParams {
   Indi_Gator_Params_M5() : GatorParams(indi_gator_defaults, PERIOD_M5) {
+<<<<<<< Updated upstream
     applied_price = (ENUM_APPLIED_PRICE)1;
     jaw_period = 10;
     jaw_shift = 8;
+=======
+    applied_price = (ENUM_APPLIED_PRICE)0;
+    jaw_period = 13;
+    jaw_shift = 10;
+>>>>>>> Stashed changes
     lips_period = 3;
     lips_shift = 1;
     ma_method = (ENUM_MA_METHOD)2;
@@ -25,12 +31,12 @@ struct Stg_Gator_Params_M5 : StgParams {
     lot_size = 0;
     signal_open_method = 0;
     signal_open_filter = 1;
-    signal_open_level = (float)0;
+    signal_open_level = (float)0.0;
     signal_open_boost = 0;
     signal_close_method = 0;
     signal_close_level = (float)0;
     price_stop_method = 0;
-    price_stop_level = (float)2;
+    price_stop_level = (float)1;
     tick_filter_method = 1;
     max_spread = 0;
   }
