@@ -1,11 +1,11 @@
 ---
-name: Optimize SignalClose params
+name: Optimize Indicator Period params
 
 # yamllint disable-line rule:truthy
 on:
   push:
     branches:
-      - 'optimize-signalclose'
+      - 'optimize-indi-periods'
 
 jobs:
   Compile:
@@ -47,7 +47,7 @@ jobs:
           path: '*.ex?'
   Process:
     env:
-      SETS_DIR: sets/optimize/signalclose
+      SETS_DIR: sets/optimize/indicator/periods
     outputs:
       sets-list: ${{ steps.get-sets.outputs.sets }}
     runs-on: ubuntu-latest

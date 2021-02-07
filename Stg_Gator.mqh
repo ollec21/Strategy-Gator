@@ -4,19 +4,20 @@
  */
 
 // User input params.
-INPUT float Gator_LotSize = 0;                       // Lot size
-INPUT int Gator_SignalOpenMethod = 0;                // Signal open method (0-
-INPUT float Gator_SignalOpenLevel = 0.0f;            // Signal open level
-INPUT int Gator_SignalOpenFilterMethod = 1;          // Signal open filter method
-INPUT int Gator_SignalOpenBoostMethod = 0.00000000;  // Signal open boost method
-INPUT int Gator_SignalCloseMethod = 0;               // Signal close method (0-
-INPUT float Gator_SignalCloseLevel = 0.0f;           // Signal close level
-INPUT int Gator_PriceStopMethod = 0;                 // Price stop method
-INPUT float Gator_PriceStopLevel = 0;                // Price stop level
-INPUT int Gator_TickFilterMethod = 1;                // Tick filter method
-INPUT float Gator_MaxSpread = 4.0;                   // Max spread to trade (pips)
-INPUT int Gator_Shift = 2;                           // Shift
-INPUT int Gator_OrderCloseTime = -20;                // Order close time in mins (>0) or bars (<0)
+INPUT string __Gator_Parameters__ = "-- Gator strategy params --";  // >>> GATOR <<<
+INPUT float Gator_LotSize = 0;                                      // Lot size
+INPUT int Gator_SignalOpenMethod = 0;                               // Signal open method (-4-4)
+INPUT float Gator_SignalOpenLevel = 0.0f;                           // Signal open level
+INPUT int Gator_SignalOpenFilterMethod = 1;                         // Signal open filter method
+INPUT int Gator_SignalOpenBoostMethod = 0;                          // Signal open boost method
+INPUT int Gator_SignalCloseMethod = 0;                              // Signal close method (-4-4)
+INPUT float Gator_SignalCloseLevel = 0.0f;                          // Signal close level
+INPUT int Gator_PriceStopMethod = 0;                                // Price stop method
+INPUT float Gator_PriceStopLevel = 0;                               // Price stop level
+INPUT int Gator_TickFilterMethod = 1;                               // Tick filter method
+INPUT float Gator_MaxSpread = 4.0;                                  // Max spread to trade (pips)
+INPUT int Gator_Shift = 2;                                          // Shift
+INPUT int Gator_OrderCloseTime = -20;                               // Order close time in mins (>0) or bars (<0)
 INPUT string __Gator_Indi_Gator_Parameters__ =
     "-- Gator strategy: Gator indicator params --";                   // >>> Gator strategy: Gator indicator <<<
 INPUT int Gator_Indi_Gator_Period_Jaw = 6;                            // Jaw Period
@@ -79,12 +80,12 @@ class Stg_Gator : public Strategy {
     // Initialize strategy initial values.
     GatorParams _indi_params(indi_gator_defaults, _tf);
     StgParams _stg_params(stg_gator_defaults);
-    if (!Terminal::IsOptimization()) {
-      SetParamsByTf<GatorParams>(_indi_params, _tf, indi_gator_m1, indi_gator_m5, indi_gator_m15, indi_gator_m30,
-                                 indi_gator_h1, indi_gator_h4, indi_gator_h8);
-      SetParamsByTf<StgParams>(_stg_params, _tf, stg_gator_m1, stg_gator_m5, stg_gator_m15, stg_gator_m30, stg_gator_h1,
-                               stg_gator_h4, stg_gator_h8);
-    }
+#ifdef __config__
+    SetParamsByTf<GatorParams>(_indi_params, _tf, indi_gator_m1, indi_gator_m5, indi_gator_m15, indi_gator_m30,
+                               indi_gator_h1, indi_gator_h4, indi_gator_h8);
+    SetParamsByTf<StgParams>(_stg_params, _tf, stg_gator_m1, stg_gator_m5, stg_gator_m15, stg_gator_m30, stg_gator_h1,
+                             stg_gator_h4, stg_gator_h8);
+#endif
     // Initialize indicator.
     GatorParams gator_params(_indi_params);
     _stg_params.SetIndicator(new Indi_Gator(_indi_params));
@@ -94,7 +95,6 @@ class Stg_Gator : public Strategy {
     _stg_params.SetTf(_tf, _Symbol);
     // Initialize strategy instance.
     Strategy *_strat = new Stg_Gator(_stg_params, "Gator");
-    _stg_params.SetStops(_strat, _strat);
     return _strat;
   }
 
@@ -103,88 +103,31 @@ class Stg_Gator : public Strategy {
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, float _level = 0.0f, int _shift = 0) {
     Indi_Gator *_indi = Data();
-    bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
+    bool _is_valid = _indi[_shift].IsValid() && _indi[_shift + 1].IsValid() && _indi[_shift + 2].IsValid();
     bool _result = _is_valid;
-    double _level_pips = _level * Chart().GetPipSize();
     if (_is_valid) {
       switch (_cmd) {
         case ORDER_TYPE_BUY:
-          _result = _indi[CURR][(int)LINE_LOWER_HISTOGRAM] < _indi[PREV][(int)LINE_LOWER_HISTOGRAM];
-          if (METHOD(_method, 0))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 1))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 2))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 3))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 4))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 5))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
-          if (METHOD(_method, 6))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 7))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 8))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 9))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 10))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 11))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
+          // Buy: if the indicator is increasing.
+          _result &= _indi.IsIncreasing(2, LINE_UPPER_HISTOGRAM, _shift);
+          _result &= _indi.IsDecreasing(2, LINE_LOWER_HISTOGRAM, _shift);
+          _result &= _indi.IsIncByPct(_level, LINE_UPPER_HISTOGRAM, _shift, 2);
+          _result &= _indi.IsDecByPct(-_level, LINE_LOWER_HISTOGRAM, _shift, 2);
+          if (_result && _method != 0) {
+            if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, LINE_LOWER_HISTOGRAM, _shift + 3);
+            if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, LINE_LOWER_HISTOGRAM, _shift + 5);
+          }
           break;
         case ORDER_TYPE_SELL:
-          _result = _indi[CURR][(int)LINE_UPPER_HISTOGRAM] > _indi[PREV][(int)LINE_UPPER_HISTOGRAM];
-          if (METHOD(_method, 0))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 1))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 2))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 3))
-            _result &= _indi[PREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_LOWER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 4))
-            _result &= _indi[PPREV][(int)LINE_LOWER_HISTOGRAM] >
-                       _indi[3][(int)LINE_LOWER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 5))
-            _result &= _indi[3][(int)LINE_LOWER_HISTOGRAM] <
-                       _indi[4][(int)LINE_LOWER_HISTOGRAM];  // ... 4 consecutive columns are green.
-          if (METHOD(_method, 6))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are red.
-          if (METHOD(_method, 7))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are red.
-          if (METHOD(_method, 8))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are red.
-          if (METHOD(_method, 9))
-            _result &= _indi[PREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[PPREV][(int)LINE_UPPER_HISTOGRAM];  // ... 2 consecutive columns are green.
-          if (METHOD(_method, 10))
-            _result &= _indi[PPREV][(int)LINE_UPPER_HISTOGRAM] >
-                       _indi[3][(int)LINE_UPPER_HISTOGRAM];  // ... 3 consecutive columns are green.
-          if (METHOD(_method, 11))
-            _result &= _indi[3][(int)LINE_UPPER_HISTOGRAM] <
-                       _indi[4][(int)LINE_UPPER_HISTOGRAM];  // ... 4 consecutive columns are green.
+          // Sell: if the indicator is decreasing.
+          _result &= _indi.IsDecreasing(2, LINE_UPPER_HISTOGRAM, _shift);
+          _result &= _indi.IsIncreasing(2, LINE_LOWER_HISTOGRAM, _shift);
+          _result &= _indi.IsDecByPct(-_level, LINE_UPPER_HISTOGRAM, _shift, 2);
+          _result &= _indi.IsIncByPct(_level, LINE_LOWER_HISTOGRAM, _shift, 2);
+          if (_result && _method != 0) {
+            if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, LINE_UPPER_HISTOGRAM, _shift + 3);
+            if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, LINE_UPPER_HISTOGRAM, _shift + 5);
+          }
           break;
       }
     }
